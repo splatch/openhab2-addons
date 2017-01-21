@@ -33,8 +33,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.airquality.AirQualityBindingConstants;
 import org.openhab.binding.airquality.internal.AirQualityConfiguration;
-import org.openhab.binding.airquality.internal.AirQualityJsonResponse;
+import org.openhab.binding.airquality.internal.json.AirQualityJsonData;
+import org.openhab.binding.airquality.internal.json.AirQualityJsonResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +56,6 @@ public class AirQualityHandler extends BaseThingHandler {
     private static final String URL = "http://api.waqi.info/feed/geo:%LOCATION%/?token=%APIKEY%";
 
     private static final int DEFAULT_REFRESH_PERIOD = 30;
-
-    private AirQualityJsonResponse aqiData = null;
 
     private ScheduledFuture<?> refreshJob;
 
@@ -110,11 +110,11 @@ public class AirQualityHandler extends BaseThingHandler {
                 public void run() {
                     try {
                         // Request new air quality data to the aqicn.org service
-                        updateAirQualityData();
+                        AirQualityJsonData aqiData = updateAirQualityData();
 
                         // Update all channels from the updated AQI data
                         for (Channel channel : getThing().getChannels()) {
-                            updateChannel(channel.getUID().getId());
+                            updateChannel(channel.getUID().getId(), aqiData);
                         }
                     } catch (Exception e) {
                         logger.error("Exception occurred during execution: {}", e.getMessage());
@@ -152,7 +152,7 @@ public class AirQualityHandler extends BaseThingHandler {
      *
      * @param channelId the id identifying the channel to be updated
      */
-    private void updateChannel(String channelId) {
+    private void updateChannel(String channelId, AirQualityJsonData aqiData) {
         if (isLinked(channelId)) {
             Object value;
             try {
@@ -190,10 +190,9 @@ public class AirQualityHandler extends BaseThingHandler {
      *
      * @return {boolean}
      */
-    private synchronized boolean updateAirQualityData() {
+    private AirQualityJsonData updateAirQualityData() {
         AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
-        aqiData = getAirQualityData(StringUtils.trimToEmpty(config.location));
-        return aqiData != null;
+        return getAirQualityData(StringUtils.trimToEmpty(config.location));
     }
 
     /**
@@ -267,26 +266,26 @@ public class AirQualityHandler extends BaseThingHandler {
         return resultOk ? result : null;
     }
 
-    public static Object getValue(String channelId, Object data) throws Exception {
+    public static Object getValue(String channelId, AirQualityJsonData data) throws Exception {
         String[] fields = StringUtils.split(channelId, "#");
-        return getValue(data, fields, 0);
-    }
 
-    /**
-     * Iterates through the fields and returns the getter value.
-     */
-    @SuppressWarnings("all")
-    private static Object getValue(Object data, String[] fields, int index) throws Exception {
         if (data == null) {
             return null;
         }
-        String fieldName = fields[index];
-        Method method = data.getClass().getMethod(toGetterString(fieldName), null);
-        Object result = method.invoke(data, (Object[]) null);
-        if (++index < fields.length) {
-            result = getValue(result, fields, index);
+
+        String fieldName = fields[0];
+
+        switch (fieldName) {
+            case AirQualityBindingConstants.PM25:
+                return data.getIaqi().getPm25();
+            case AirQualityBindingConstants.PM10:
+                return data.getIaqi().getPm10();
+            case AirQualityBindingConstants.CO:
+                return data.getIaqi().getCo();
+            // and so on...
         }
-        return result;
+
+        return null;
     }
 
     /**

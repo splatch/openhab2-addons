@@ -44,5 +44,8 @@ public class AirQualityBindingConstants {
     public final static String HUMIDITY = "humidity";
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_AQI);
+    public final static Set<String> SUPPORTED_CHANNEL_IDS = ImmutableSet.of(AQI, AQIDESCRIPTION, PM25, PM10, O3, NO2, CO,
+        LOCATIONNAME, LOCATIONURL, OBSERVATIONTIME, STATIONID, TEMPERATURE, PRESSURE, HUMIDITY
+    );
 
 }

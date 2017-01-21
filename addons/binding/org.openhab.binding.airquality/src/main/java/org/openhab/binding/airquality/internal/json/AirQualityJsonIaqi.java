@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.airquality.internal;
+package org.openhab.binding.airquality.internal.json;
 
-import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link AirQualityJsonIaqi} is responsible for storing
@@ -20,49 +20,51 @@ import com.google.gson.JsonObject;
  */
 public class AirQualityJsonIaqi {
 
-    private JsonObject pm25;
-    private JsonObject pm10;
-    private JsonObject o3;
-    private JsonObject no2;
-    private JsonObject co;
-    private JsonObject t;
-    private JsonObject p;
-    private JsonObject h;
+    private AirQualityValue<Integer> pm25;
+    private AirQualityValue<Integer> pm10;
+    private AirQualityValue<Integer> o3;
+    private AirQualityValue<Integer> no2;
+    private AirQualityValue<Integer> co;
+    private AirQualityValue<Integer> t;
+
+    @SerializedName("p")
+    private AirQualityValue<Integer> pressure;
+    private AirQualityValue<Integer> h;
 
     public AirQualityJsonIaqi() {
 
     }
 
     public int getPm25() {
-        return pm25.get("v").getAsInt();
+        return pm25.getValue();
     }
 
     public int getPm10() {
-        return pm10.get("v").getAsInt();
+        return pm10.getValue();
     }
 
     public int getO3() {
-        return o3.get("v").getAsInt();
+        return o3.getValue();
     }
 
     public int getNo2() {
-        return no2.get("v").getAsInt();
+        return no2.getValue();
     }
 
     public int getCo() {
-        return co.get("v").getAsInt();
+        return co.getValue();
     }
 
     public int getT() {
-        return t.get("v").getAsInt();
+        return t.getValue();
     }
 
     public int getP() {
-        return p.get("v").getAsInt();
+        return pressure.getValue();
     }
 
     public int getH() {
-        return h.get("v").getAsInt();
+        return h.getValue();
     }
 
 }

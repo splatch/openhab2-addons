@@ -6,12 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.airquality.internal;
+package org.openhab.binding.airquality.internal.json;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.JsonArray;
 
 /**
  * The {@link AirQualityJsonData} is responsible for storing
@@ -25,7 +24,7 @@ public class AirQualityJsonData {
     private int aqi;
     private AirQualityJsonTime time;
     private AirQualityJsonCity city;
-    private JsonArray attributions;
+    private List<Attribute> attributions;
     private AirQualityJsonIaqi iaqi;
 
     public AirQualityJsonData() {
@@ -77,7 +76,7 @@ public class AirQualityJsonData {
     public String getAttributions() {
         List<String> list = new ArrayList<String>();
         for (int i = 0; i < attributions.size(); i++) {
-            list.add(attributions.get(i).getAsJsonObject().get("name").getAsString());
+            list.add(attributions.get(i).getName());
         }
         return "Attributions: " + String.join(", ", list);
     }

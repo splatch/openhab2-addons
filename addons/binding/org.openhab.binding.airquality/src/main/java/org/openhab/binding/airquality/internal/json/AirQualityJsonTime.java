@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.airquality.internal;
+package org.openhab.binding.airquality.internal.json;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
