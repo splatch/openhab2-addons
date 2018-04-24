@@ -28,6 +28,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.http.core,
  org.eclipse.smarthome.io.rest,
  org.osgi.framework,
  org.osgi.service.component,

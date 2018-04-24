@@ -9,20 +9,18 @@
 package org.openhab.io.imperihome.internal;
 
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.persistence.PersistenceServiceRegistry;
+import org.eclipse.smarthome.io.http.core.SmartHomeServlet;
 import org.openhab.io.imperihome.internal.action.ActionRegistry;
 import org.openhab.io.imperihome.internal.handler.DeviceActionHandler;
 import org.openhab.io.imperihome.internal.handler.DeviceHistoryHandler;
@@ -37,7 +35,6 @@ import org.openhab.io.imperihome.internal.model.param.DeviceParameters;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
 import org.openhab.io.imperihome.internal.processor.DeviceRegistry;
 import org.openhab.io.imperihome.internal.processor.ItemProcessor;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +46,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Pepijn de Geus - Initial contribution
  */
-public class ImperiHomeApiServlet extends HttpServlet {
+public class ImperiHomeApiServlet extends SmartHomeServlet {
 
     private static final long serialVersionUID = -1966364789075448441L;
 
@@ -71,7 +68,6 @@ public class ImperiHomeApiServlet extends HttpServlet {
     private final Gson gson;
     private final ImperiHomeConfig imperiHomeConfig;
 
-    private HttpService httpService;
     private ItemRegistry itemRegistry;
     private PersistenceServiceRegistry persistenceServiceRegistry;
     private EventPublisher eventPublisher;
@@ -115,18 +111,12 @@ public class ImperiHomeApiServlet extends HttpServlet {
         deviceActionHandler = new DeviceActionHandler(deviceRegistry);
         deviceHistoryHandler = new DeviceHistoryHandler(deviceRegistry, persistenceServiceRegistry);
 
-        try {
-            Dictionary<String, String> servletParams = new Hashtable<String, String>();
-            httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
-            logger.info("Started ImperiHome integration service at " + PATH);
-        } catch (Exception e) {
-            logger.error("Could not start ImperiHome integration service: {}", e.getMessage(), e);
-        }
+        super.activate(PATH);
     }
 
     /**
      * OSGi config modification callback.
-
+     *
      * @param config Service config.
      */
     protected void modified(Map<String, Object> config) {
@@ -137,10 +127,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
      * OSGi deactivation callback.
      */
     protected void deactivate() {
-        try {
-            httpService.unregister(PATH);
-        } catch (IllegalArgumentException ignored) {
-        }
+        super.deactivate(PATH);
 
         itemProcessor.destroy();
 
@@ -169,14 +156,6 @@ public class ImperiHomeApiServlet extends HttpServlet {
 
     protected void unsetEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = null;
-    }
-
-    protected void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
     }
 
     protected void setPersistenceServiceRegistry(PersistenceServiceRegistry persistenceServiceRegistry) {
