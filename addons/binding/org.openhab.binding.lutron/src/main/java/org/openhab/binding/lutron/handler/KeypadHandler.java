@@ -18,9 +18,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lutron.internal.mapping.ButtonMapping;
 import org.openhab.binding.lutron.internal.mapping.ChannelMapping;
+import org.openhab.binding.lutron.internal.mapping.LedMapping;
 import org.openhab.binding.lutron.internal.mapping.ListMappingSet;
 import org.openhab.binding.lutron.internal.mapping.MappingSet;
+import org.openhab.binding.lutron.internal.mapping.Switch;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,28 +54,21 @@ public class KeypadHandler extends LutronHandler {
     private static final int COMPONENT_LED6 = 86;
     private static final int COMPONENT_LED7 = 87;
 
-    private static final MappingSet MAPPING = new ListMappingSet(new ChannelMapping(COMPONENT_BUTTON1, CHANNEL_BUTTON1),
-            new ChannelMapping(COMPONENT_BUTTON2, CHANNEL_BUTTON2),
-            new ChannelMapping(COMPONENT_BUTTON3, CHANNEL_BUTTON3),
-            new ChannelMapping(COMPONENT_BUTTON4, CHANNEL_BUTTON4),
-            new ChannelMapping(COMPONENT_BUTTON5, CHANNEL_BUTTON5),
-            new ChannelMapping(COMPONENT_BUTTON6, CHANNEL_BUTTON6),
-            new ChannelMapping(COMPONENT_BUTTON7, CHANNEL_BUTTON7),
-            new ChannelMapping(COMPONENT_BUTTONTOPRAISE, CHANNEL_BUTTONTOPRAISE),
-            new ChannelMapping(COMPONENT_BUTTONTOPLOWER, CHANNEL_BUTTONTOPLOWER),
-            new ChannelMapping(COMPONENT_BUTTONBOTTOMRAISE, CHANNEL_BUTTONBOTTOMRAISE),
-            new ChannelMapping(COMPONENT_BUTTONBOTTOMLOWER, CHANNEL_BUTTONBOTTOMLOWER),
-            new ChannelMapping(COMPONENT_LED1, CHANNEL_LED1), new ChannelMapping(COMPONENT_LED2, CHANNEL_LED2),
-            new ChannelMapping(COMPONENT_LED3, CHANNEL_LED3), new ChannelMapping(COMPONENT_LED4, CHANNEL_LED4),
-            new ChannelMapping(COMPONENT_LED5, CHANNEL_LED5), new ChannelMapping(COMPONENT_LED6, CHANNEL_LED6),
-            new ChannelMapping(COMPONENT_LED7, CHANNEL_LED7));
-
-    private static final Integer ACTION_PRESS = 3;
-    private static final Integer ACTION_RELEASE = 4;
-    private static final Integer LED_STATE = 9;
-
-    private static final Integer LED_OFF = 0;
-    private static final Integer LED_ON = 1;
+    private static final MappingSet MAPPING = new ListMappingSet(new ButtonMapping(COMPONENT_BUTTON1, CHANNEL_BUTTON1),
+            new ButtonMapping(COMPONENT_BUTTON2, CHANNEL_BUTTON2),
+            new ButtonMapping(COMPONENT_BUTTON3, CHANNEL_BUTTON3),
+            new ButtonMapping(COMPONENT_BUTTON4, CHANNEL_BUTTON4),
+            new ButtonMapping(COMPONENT_BUTTON5, CHANNEL_BUTTON5),
+            new ButtonMapping(COMPONENT_BUTTON6, CHANNEL_BUTTON6),
+            new ButtonMapping(COMPONENT_BUTTON7, CHANNEL_BUTTON7),
+            new ButtonMapping(COMPONENT_BUTTONTOPRAISE, CHANNEL_BUTTONTOPRAISE),
+            new ButtonMapping(COMPONENT_BUTTONTOPLOWER, CHANNEL_BUTTONTOPLOWER),
+            new ButtonMapping(COMPONENT_BUTTONBOTTOMRAISE, CHANNEL_BUTTONBOTTOMRAISE),
+            new ButtonMapping(COMPONENT_BUTTONBOTTOMLOWER, CHANNEL_BUTTONBOTTOMLOWER),
+            new LedMapping(COMPONENT_LED1, CHANNEL_LED1), new LedMapping(COMPONENT_LED2, CHANNEL_LED2),
+            new LedMapping(COMPONENT_LED3, CHANNEL_LED3), new LedMapping(COMPONENT_LED4, CHANNEL_LED4),
+            new LedMapping(COMPONENT_LED5, CHANNEL_LED5), new LedMapping(COMPONENT_LED6, CHANNEL_LED6),
+            new LedMapping(COMPONENT_LED7, CHANNEL_LED7));
 
     private final Logger logger = LoggerFactory.getLogger(KeypadHandler.class);
 
@@ -96,7 +92,8 @@ public class KeypadHandler extends LutronHandler {
 
         updateStatus(ThingStatus.ONLINE);
 
-        MAPPING.all().map(ChannelMapping::getComponent).forEach(component -> queryDevice(component, LED_STATE));
+        MAPPING.all().filter(mapping -> mapping.getStateCommand().isPresent())
+                .forEach(mapping -> queryDevice(mapping.getComponent(), mapping.getStateCommand().get()));
     }
 
     private ChannelUID channelFromComponent(int component) {
@@ -113,14 +110,20 @@ public class KeypadHandler extends LutronHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, Command command) {
-        Optional<Integer> component = MAPPING.fromChannel(channelUID).map(ChannelMapping::getComponent);
+        Optional<ChannelMapping> component = MAPPING.fromChannel(channelUID);
 
         if (component.isPresent()) {
             if (command instanceof OnOffType) {
                 OnOffType state = (OnOffType) command;
-                Integer componentId = component.get();
+                ChannelMapping mapping = component.get();
 
-                device(componentId, LED_STATE, state == OnOffType.ON ? 1 : 0);
+                Switch lutronState = mapping.getArguments(state);
+                Optional<Integer> argument = lutronState.getParameter();
+                if (argument.isPresent()) {
+                    device(mapping.getComponent(), lutronState.getAction(), argument.get());
+                } else {
+                    device(mapping.getComponent(), lutronState.getAction());
+                }
             }
         }
     }
@@ -132,8 +135,8 @@ public class KeypadHandler extends LutronHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        MAPPING.fromChannel(channelUID).map(ChannelMapping::getComponent)
-                .ifPresent(component -> queryDevice(component, LED_STATE));
+        MAPPING.fromChannel(channelUID).filter(mapping -> mapping.getStateCommand().isPresent())
+                .ifPresent(mapping -> queryDevice(mapping.getComponent(), mapping.getStateCommand().get()));
     }
 
     @Override
@@ -149,21 +152,29 @@ public class KeypadHandler extends LutronHandler {
                 return;
             }
 
-            ChannelUID channelUID = channelFromComponent(component);
+            Optional<ChannelMapping> channelMapping = MAPPING.fromComponent(component);
+            Optional<ChannelUID> channel = channelMapping.map(ChannelMapping::getChannel)
+                    .map(channelName -> new ChannelUID(getThing().getUID(), channelName));
 
-            if (channelUID != null) {
-                if (LED_STATE.toString().equals(parameters[1]) && parameters.length >= 3) {
-                    if (LED_ON.toString().equals(parameters[2])) {
-                        updateState(channelUID, OnOffType.ON);
-                    } else if (LED_OFF.toString().equals(parameters[2])) {
-                        updateState(channelUID, OnOffType.OFF);
-                    }
-                } else if (ACTION_PRESS.toString().equals(parameters[1])) {
-                    postCommand(channelUID, OnOffType.ON);
-                } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
-                    postCommand(channelUID, OnOffType.OFF);
-                }
-            }
+            channelMapping.flatMap(mapping -> mapping.parse(parameters))
+                    .ifPresent(state -> updateState(channel.get(), state));
+
+            /*
+             * if (channelUID != null) {
+             * if (LED_STATE.toString().equals(parameters[1]) && parameters.length >= 3) {
+             * if (LED_ON.toString().equals(parameters[2])) {
+             * updateState(channelUID, OnOffType.ON);
+             * } else if (LED_OFF.toString().equals(parameters[2])) {
+             * updateState(channelUID, OnOffType.OFF);
+             * }
+             * } else if (ACTION_PRESS.toString().equals(parameters[1])) {
+             * postCommand(channelUID, OnOffType.ON);
+             * } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
+             * postCommand(channelUID, OnOffType.OFF);
+             * }
+             * }
+             */
+
         }
     }
 
