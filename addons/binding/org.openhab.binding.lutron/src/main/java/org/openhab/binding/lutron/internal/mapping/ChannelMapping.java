@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.lutron.internal.mapping;
 
+import java.util.Optional;
+
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
 /**
@@ -15,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
  *
  * @author Łukasz Dywicki - initial contribution
  */
-public class ChannelMapping {
+public abstract class ChannelMapping {
 
     private final int component;
     private final String channel;
@@ -41,6 +44,18 @@ public class ChannelMapping {
     public boolean matches(int component) {
         return this.component == component;
     }
+
+    /**
+     * Extension method which allows to customize handling of state changes depending on channel type.
+     *
+     * @param state New state of button/led.
+     * @return Switch values to be placed in command sent to gateway.
+     */
+    public abstract Switch getArguments(OnOffType state);
+
+    public abstract Optional<Integer> getStateCommand();
+
+    public abstract Optional<OnOffType> parse(String[] parameters);
 
     @Override
     public int hashCode() {
