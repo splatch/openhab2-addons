@@ -60,12 +60,12 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private static final String DEFAULT_USER = "lutron";
     private static final String DEFAULT_PASSWORD = "integration";
 
-    private Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
     private IPBridgeConfig config;
 
-    private TelnetSession session;
-    private BlockingQueue<LutronCommand> sendQueue = new LinkedBlockingQueue<>();
+    private final TelnetSession session;
+    private final BlockingQueue<LutronCommand> sendQueue = new LinkedBlockingQueue<>();
 
     private ScheduledFuture<?> messageSender;
     private ScheduledFuture<?> keepAlive;
@@ -148,9 +148,11 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            // sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.MONITORING, -1, 255));
             // Disable prompts
             sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.MONITORING, -1, MONITOR_PROMPT,
                     MONITOR_DISABLE));
+            sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.MONITORING, -1, 2, 1));
 
             // Check the time device database was last updated. On the initial connect, this will trigger
             // a scan for paired devices.
