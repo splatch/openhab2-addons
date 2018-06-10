@@ -11,12 +11,16 @@ package org.openhab.binding.lutron.handler;
 import static org.openhab.binding.lutron.LutronBindingConstants.*;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lutron.internal.mapping.ButtonMapping;
 import org.openhab.binding.lutron.internal.mapping.ChannelMapping;
@@ -90,10 +94,29 @@ public class KeypadHandler extends LutronHandler {
 
         this.integrationId = id.intValue();
 
-        updateStatus(ThingStatus.ONLINE);
+        ThingBuilder thing = editThing();
+
+        // Channel channel = ChannelBuilder.create(channelUID, acceptedItem).withConfiguration(configuration)
+        // .withDefaultTags(defaultTags).withDescription(description != null ? description : "").withKind(kind)
+        // .withLabel(channelName).withProperties(properties).withType(type).build();
+        // thingBuilder.withoutChannel(channelUID).withChannel(channel);
+        // updateThing(thingBuilder.build());
+
+        for (ChannelMapping mapping : MAPPING.all().collect(Collectors.toList())) {
+            ChannelBuilder channelBuilder = ChannelBuilder.create(new ChannelUID(mapping.getChannel()), "switch");
+            Optional<ChannelKind> kind = mapping.getKind();
+            if (kind.isPresent()) {
+                channelBuilder.withKind(kind.get());
+            }
+            thing.withChannel(channelBuilder.build());
+        }
+
+        updateThing(thing.build());
 
         MAPPING.all().filter(mapping -> mapping.getStateCommand().isPresent())
                 .forEach(mapping -> queryDevice(mapping.getComponent(), mapping.getStateCommand().get()));
+
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private ChannelUID channelFromComponent(int component) {
