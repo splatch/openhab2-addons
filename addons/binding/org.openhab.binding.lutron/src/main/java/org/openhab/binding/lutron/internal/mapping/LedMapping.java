@@ -11,6 +11,7 @@ package org.openhab.binding.lutron.internal.mapping;
 import java.util.Optional;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,11 @@ public class LedMapping extends ChannelMapping {
 
     public LedMapping(int component, String channel) {
         super(component, channel);
+    }
+
+    @Override
+    public Optional<ChannelKind> getKind() {
+        return Optional.of(ChannelKind.STATE);
     }
 
     @Override

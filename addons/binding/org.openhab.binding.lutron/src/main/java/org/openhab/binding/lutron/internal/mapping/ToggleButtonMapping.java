@@ -16,21 +16,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Mapping between lutron button and openhab channel.
+ * Mapping between lutron toggle button and openhab channel.
  *
  * @author Łukasz Dywicki - initial contribution
  */
-public class ButtonMapping extends ChannelMapping {
+public class ToggleButtonMapping extends ChannelMapping {
 
-    private final Logger logger = LoggerFactory.getLogger(ButtonMapping.class);
+    private final Logger logger = LoggerFactory.getLogger(ToggleButtonMapping.class);
 
     private static final Integer ACTION_PRESS = 3;
-    private static final Integer ACTION_RELEASE = 4;
 
     private final static Switch SWITCH_ON = new SimpleSwitch(ACTION_PRESS);
-    private final static Switch SWITCH_OFF = new SimpleSwitch(ACTION_RELEASE);
 
-    public ButtonMapping(int component, String channel) {
+    public ToggleButtonMapping(int component, String channel) {
         super(component, channel);
     }
 
@@ -41,10 +39,7 @@ public class ButtonMapping extends ChannelMapping {
 
     @Override
     public Switch getArguments(OnOffType state) {
-        if (state == OnOffType.ON) {
-            return SWITCH_ON;
-        }
-        return SWITCH_OFF;
+        return SWITCH_ON;
     }
 
     @Override

@@ -89,11 +89,31 @@ public class KeypadHandler extends LutronHandler {
         }
 
         this.integrationId = id.intValue();
-
-        updateStatus(ThingStatus.ONLINE);
+        /*
+         * ThingBuilder thing = editThing();
+         * 
+         * // Channel channel = ChannelBuilder.create(channelUID, acceptedItem).withConfiguration(configuration)
+         * // .withDefaultTags(defaultTags).withDescription(description != null ? description : "").withKind(kind)
+         * // .withLabel(channelName).withProperties(properties).withType(type).build();
+         * // thingBuilder.withoutChannel(channelUID).withChannel(channel);
+         * // updateThing(thingBuilder.build());
+         * 
+         * for (ChannelMapping mapping : MAPPING.all().collect(Collectors.toList())) {
+         * ChannelBuilder channelBuilder = ChannelBuilder.create(new ChannelUID(mapping.getChannel()), "switch");
+         * Optional<ChannelKind> kind = mapping.getKind();
+         * if (kind.isPresent()) {
+         * channelBuilder.withKind(kind.get());
+         * }
+         * thing.withChannel(channelBuilder.build());
+         * }
+         * 
+         * updateThing(thing.build());
+         */
 
         MAPPING.all().filter(mapping -> mapping.getStateCommand().isPresent())
                 .forEach(mapping -> queryDevice(mapping.getComponent(), mapping.getStateCommand().get()));
+
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private ChannelUID channelFromComponent(int component) {

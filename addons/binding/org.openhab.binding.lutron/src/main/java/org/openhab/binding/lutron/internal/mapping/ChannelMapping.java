@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 
 /**
  * Mapping between lutron component and openhab channel.
@@ -52,6 +53,8 @@ public abstract class ChannelMapping {
      * @return Switch values to be placed in command sent to gateway.
      */
     public abstract Switch getArguments(OnOffType state);
+
+    public abstract Optional<ChannelKind> getKind();
 
     public abstract Optional<Integer> getStateCommand();
 

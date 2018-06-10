@@ -10,6 +10,10 @@ package org.openhab.binding.lutron;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.profiles.ProfileTypeBuilder;
+import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
+import org.eclipse.smarthome.core.thing.profiles.StateProfileType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link LutronBinding} class defines common constants, which are
@@ -30,6 +34,10 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
     public static final ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
+
+    // Channel types
+    public static final ChannelTypeUID BUTTON_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "button");
+    public static final ChannelTypeUID LED_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "ledIndicator");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
@@ -62,4 +70,9 @@ public class LutronBindingConstants {
 
     // Thing config properties
     public static final String INTEGRATION_ID = "integrationId";
+
+    // profiles
+    public static final ProfileTypeUID FOLLOW = new ProfileTypeUID(BINDING_ID, "follow");
+    public static final StateProfileType FOLLOW_TYPE = ProfileTypeBuilder.newState(FOLLOW, "Follow").build();
+
 }
