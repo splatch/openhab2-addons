@@ -42,39 +42,29 @@ public class DbXmlInfoReader extends XmlDocumentReader<Project> {
         xstream.aliasField("Areas", Project.class, "areas");
 
         xstream.alias("Area", Area.class);
-        xstream.aliasField("Name", Area.class, "name");
-        xstream.useAttributeFor(Area.class, "name");
+        xstream.aliasAttribute(Area.class, "name", "Name");
         xstream.aliasField("DeviceGroups", Area.class, "deviceNodes");
         xstream.aliasField("Outputs", Area.class, "outputs");
         xstream.aliasField("Areas", Area.class, "areas");
 
         xstream.alias("DeviceGroup", DeviceGroup.class);
-        xstream.aliasField("Name", DeviceGroup.class, "name");
-        xstream.useAttributeFor(DeviceGroup.class, "name");
+        xstream.aliasAttribute(DeviceGroup.class, "name", "Name");
         xstream.aliasField("Devices", DeviceGroup.class, "devices");
 
         xstream.alias("Device", Device.class);
-        xstream.aliasField("Name", Device.class, "name");
-        xstream.useAttributeFor(Device.class, "name");
-        xstream.aliasField("IntegrationID", Device.class, "integrationId");
-        xstream.useAttributeFor(Device.class, "integrationId");
-        xstream.aliasField("DeviceType", Device.class, "type");
-        xstream.useAttributeFor(Device.class, "type");
+        xstream.aliasAttribute(Device.class, "name", "Name");
+        xstream.aliasAttribute(Device.class, "integrationId", "IntegrationID");
+        xstream.aliasAttribute(Device.class, "type", "DeviceType");
         xstream.aliasField("Components", Device.class, "components");
 
         xstream.alias("Component", Component.class);
-        xstream.aliasField("ComponentNumber", Component.class, "componentNumber");
-        xstream.useAttributeFor(Component.class, "componentNumber");
-        xstream.aliasField("ComponentType", Component.class, "type");
-        xstream.useAttributeFor(Component.class, "type");
+        xstream.aliasAttribute(Component.class, "componentNumber", "ComponentNumber");
+        xstream.aliasAttribute(Component.class, "type", "ComponentType");
 
         xstream.alias("Output", Output.class);
-        xstream.aliasField("Name", Output.class, "name");
-        xstream.useAttributeFor(Output.class, "name");
-        xstream.aliasField("IntegrationID", Output.class, "integrationId");
-        xstream.useAttributeFor(Output.class, "integrationId");
-        xstream.aliasField("OutputType", Output.class, "type");
-        xstream.useAttributeFor(Output.class, "type");
+        xstream.aliasAttribute(Output.class, "name", "Name");
+        xstream.aliasAttribute(Output.class, "integrationId", "IntegrationID");
+        xstream.aliasAttribute(Output.class, "type", "OutputType");
 
         // This reader is only interested in device thing information and does not read
         // everything contained in DbXmlInfo. Ignoring unknown elements also makes the
