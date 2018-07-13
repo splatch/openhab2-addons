@@ -11,6 +11,8 @@ package org.openhab.binding.lutron.internal.discovery.project;
 import java.util.Collections;
 import java.util.List;
 
+import org.openhab.binding.lutron.internal.xml.visitor.Visitor;
+
 /**
  * A group of input devices in the Lutron system.
  *
@@ -26,5 +28,10 @@ public class DeviceGroup implements DeviceNode {
 
     public List<Device> getDevices() {
         return devices != null ? devices : Collections.<Device> emptyList();
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -8,15 +8,22 @@
  */
 package org.openhab.binding.lutron.internal.discovery.project;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.openhab.binding.lutron.internal.xml.visitor.Visitor;
+
 /**
  * A component of an input device in a Lutron system. Generally each component of
  * the device maps to a channel of the device thing.
  *
  * @author Allan Tong - Initial contribution
  */
-public class Component {
+public class Component implements Element {
     private Integer componentNumber;
     private String type;
+
+    private List<ComponentNode> components;
 
     public Integer getComponentNumber() {
         return componentNumber;
@@ -28,5 +35,14 @@ public class Component {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public List<ComponentNode> getComponents() {
+        return components != null ? components : Collections.<ComponentNode> emptyList();
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }

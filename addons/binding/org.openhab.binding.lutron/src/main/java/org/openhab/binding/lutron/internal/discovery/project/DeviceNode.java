@@ -14,5 +14,6 @@ package org.openhab.binding.lutron.internal.discovery.project;
  *
  * @author Allan Tong - Initial contribution
  */
-public interface DeviceNode {
+public interface DeviceNode extends Element {
+
 }

@@ -11,6 +11,8 @@ package org.openhab.binding.lutron.internal.discovery.project;
 import java.util.Collections;
 import java.util.List;
 
+import org.openhab.binding.lutron.internal.xml.visitor.Visitor;
+
 /**
  * This class represents a location defined in the Lutron system. Areas are organized
  * hierarchically and can represent an entire house, a room in the house, or a specific
@@ -18,7 +20,7 @@ import java.util.List;
  *
  * @author Allan Tong - Initial contribution
  */
-public class Area {
+public class Area implements Element {
     private String name;
     private List<DeviceNode> deviceNodes;
     private List<Output> outputs;
@@ -38,5 +40,10 @@ public class Area {
 
     public List<Area> getAreas() {
         return areas != null ? areas : Collections.<Area> emptyList();
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }

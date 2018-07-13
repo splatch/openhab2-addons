@@ -10,9 +10,11 @@ package org.openhab.binding.lutron.internal.xml;
 
 import org.eclipse.smarthome.config.xml.util.XmlDocumentReader;
 import org.openhab.binding.lutron.internal.discovery.project.Area;
+import org.openhab.binding.lutron.internal.discovery.project.Button;
 import org.openhab.binding.lutron.internal.discovery.project.Component;
 import org.openhab.binding.lutron.internal.discovery.project.Device;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceGroup;
+import org.openhab.binding.lutron.internal.discovery.project.LED;
 import org.openhab.binding.lutron.internal.discovery.project.Output;
 import org.openhab.binding.lutron.internal.discovery.project.Project;
 
@@ -60,11 +62,24 @@ public class DbXmlInfoReader extends XmlDocumentReader<Project> {
         xstream.alias("Component", Component.class);
         xstream.aliasAttribute(Component.class, "componentNumber", "ComponentNumber");
         xstream.aliasAttribute(Component.class, "type", "ComponentType");
+        xstream.addImplicitCollection(Component.class, "components");
 
         xstream.alias("Output", Output.class);
         xstream.aliasAttribute(Output.class, "name", "Name");
         xstream.aliasAttribute(Output.class, "integrationId", "IntegrationID");
         xstream.aliasAttribute(Output.class, "type", "OutputType");
+
+        xstream.alias("Button", Button.class);
+        xstream.aliasAttribute(Button.class, "name", "Name");
+        xstream.aliasAttribute(Button.class, "engraving", "Engraving");
+        xstream.aliasAttribute(Button.class, "UUID", "UUID");
+        xstream.aliasAttribute(Button.class, "reverseLogic", "ReverseLedLogic");
+        xstream.aliasAttribute(Button.class, "programmingModelId", "ProgrammingModelID");
+
+        xstream.alias("LED", LED.class);
+        xstream.aliasAttribute(LED.class, "UUID", "UUID");
+        xstream.aliasAttribute(LED.class, "reverseLogic", "ReverseLedLogic");
+        xstream.aliasAttribute(LED.class, "programmingModelId", "ProgrammingModelID");
 
         // This reader is only interested in device thing information and does not read
         // everything contained in DbXmlInfo. Ignoring unknown elements also makes the

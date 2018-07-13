@@ -11,13 +11,15 @@ package org.openhab.binding.lutron.internal.discovery.project;
 import java.util.Collections;
 import java.util.List;
 
+import org.openhab.binding.lutron.internal.xml.visitor.Visitor;
+
 /**
  * This class represents a Lutron system and the topology of device things within
  * that system.
  *
  * @author Allan Tong - Initial contribution
  */
-public class Project {
+public class Project implements Element {
     private String appVersion;
     private String xmlVersion;
     private List<Area> areas;
@@ -32,5 +34,10 @@ public class Project {
 
     public List<Area> getAreas() {
         return areas != null ? areas : Collections.<Area> emptyList();
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
