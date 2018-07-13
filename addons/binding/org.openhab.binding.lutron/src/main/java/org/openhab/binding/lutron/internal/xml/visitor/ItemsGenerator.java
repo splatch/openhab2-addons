@@ -1,5 +1,6 @@
 package org.openhab.binding.lutron.internal.xml.visitor;
 
+import java.io.File;
 import java.util.function.Predicate;
 
 import org.openhab.binding.lutron.internal.discovery.project.Area;
@@ -12,6 +13,16 @@ import org.openhab.binding.lutron.internal.discovery.project.LED;
 import org.openhab.binding.lutron.internal.discovery.project.Project;
 
 public class ItemsGenerator implements Visitor {
+
+    public static void main(String[] args) throws Exception {
+        FilteringVisitor delegate = new FilteringVisitor(new ItemsGenerator());
+        delegate.setDeviceFilter(deviceType(DeviceType.MAIN_REPEATER).negate()
+                .and(deviceType(DeviceType.SEETOUCH_KEYPAD).or(deviceType(DeviceType.HYBRID_SEETOUCH_KEYPAD))));
+
+        ProjectReader reader = new ProjectReader(new TraversingVisitor(delegate));
+        reader.read(new File("/Users/splatch/projects/DbXmlInfo.xml").toURI().toURL());
+
+    }
 
     private static Predicate<Device> deviceType(DeviceType type) {
         return device -> {
