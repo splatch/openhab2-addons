@@ -24,6 +24,7 @@
 /bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
 /bundles/org.openhab.binding.buienradar/ @gedejong
+/bundles/org.openhab.binding.cacmi/ @twendt @Wolfgang1966 @marvkis
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
 /bundles/org.openhab.binding.cm11a/ @BobRak
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
@@ -173,6 +174,7 @@
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.systeminfo/ @svilenvul
+/bundles/org.openhab.binding.tacmi/ @twendt @Wolfgang1966 @marvkis
 /bundles/org.openhab.binding.tado/ @dfrommi
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.telegram/ @ZzetT
