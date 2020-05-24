@@ -73,7 +73,7 @@ public class StateCacheUtils {
                                         @Nullable // seems quit idiotic here as null checks also generate warnings... ?
                                         final PodState ps = spi.next();
                                         // if (ps == null) {
-                                        //     message.setValue(id, (short) 0, 0);
+                                        // message.setValue(id, (short) 0, 0);
                                         // } else {
                                         message.setValue(id, (short) (ps.value & 0xffff), ps.measureType);
                                         // }
