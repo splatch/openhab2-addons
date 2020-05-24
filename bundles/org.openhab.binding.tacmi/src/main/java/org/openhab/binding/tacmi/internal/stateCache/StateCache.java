@@ -15,12 +15,15 @@ package org.openhab.binding.tacmi.internal.stateCache;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link StateCache} class defines a state cache required
  * for communication with the TA C.M.I.
  *
  * @author Christian Niessner - Initial contribution
  */
+@NonNullByDefault
 public class StateCache {
 
     public Collection<PodStates> pods = new ArrayList<>();
