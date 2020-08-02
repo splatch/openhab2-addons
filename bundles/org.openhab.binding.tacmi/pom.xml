@@ -14,4 +14,12 @@
 
   <name>openHAB Add-ons :: Bundles :: TA C.M.I. Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.attoparser</groupId>
+      <artifactId>attoparser</artifactId>
+      <version>2.0.5.RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>

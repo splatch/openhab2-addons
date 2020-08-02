@@ -21,13 +21,18 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.binding.tacmi.internal.schema.TACmiSchemaHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TACmiHandlerFactory} is responsible for creating things and thing
@@ -39,8 +44,18 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.tacmi", service = ThingHandlerFactory.class)
 public class TACmiHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_CMI, THING_TYPE_COE_BRIDGE).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_CMI, THING_TYPE_COE_BRIDGE, THING_TYPE_CMI_SCHEMA).collect(Collectors.toSet()));
+
+    private HttpClient httpClient;
+    private TACmiChannelTypeProvider channelTypeProvider;
+
+    @Activate
+    public TACmiHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TACmiChannelTypeProvider channelTypeProvider) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.channelTypeProvider = channelTypeProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -55,8 +70,11 @@ public class TACmiHandlerFactory extends BaseThingHandlerFactory {
             return new TACmiHandler(thing);
         } else if (THING_TYPE_COE_BRIDGE.equals(thingTypeUID)) {
             return new TACmiCoEBridgeHandler((Bridge) thing);
+        } else if (THING_TYPE_CMI_SCHEMA.equals(thingTypeUID)) {
+            return new TACmiSchemaHandler(thing, httpClient, channelTypeProvider);
         }
 
         return null;
     }
+
 }
