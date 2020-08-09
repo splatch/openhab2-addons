@@ -22,8 +22,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Timo Wendt - Initial contribution
  * @author Wolfgang Klimt - improvements
- * @author Christian Niessner (marvkis) - Ported to OpenHAB2
+ * @author Christian Niessner - Ported to OpenHAB2
  */
+@NonNullByDefault
 public enum TACmiMeasureType {
     NONE(0, 1),
     TEMPERATURE(1, 10),
@@ -66,19 +67,6 @@ public enum TACmiMeasureType {
 
     public int getOffset() {
         return offset;
-    }
-
-    /**
-     * Return the measure type for the specified name.
-     *
-     * @param measure
-     * @return
-     */
-    public static TACmiMeasureType fromString(String measure) {
-        if (!measure.isBlank()) {
-            return TACmiMeasureType.valueOf(measure.toUpperCase());
-        }
-        throw new IllegalArgumentException("Invalid measure: " + measure);
     }
 
     /**

@@ -20,7 +20,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * The {@link TACmiBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
 public class TACmiBindingConstants {
