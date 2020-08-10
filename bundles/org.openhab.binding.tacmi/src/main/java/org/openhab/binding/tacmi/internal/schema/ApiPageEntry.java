@@ -14,8 +14,8 @@ package org.openhab.binding.tacmi.internal.schema;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.types.State;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.types.State;
 
 /**
  * The {@link ApiPageEntry} class contains mapping information for an entry of
