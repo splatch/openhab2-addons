@@ -49,6 +49,7 @@ public enum TACmiMeasureType {
     UNKNOWN19(19, 1),
     UNKNOWN20(20, 1),
     UNKNOWN21(21, 1),
+    FLOW(22, 1),
 
     UNSUPPORTED(-1, 1);
 
